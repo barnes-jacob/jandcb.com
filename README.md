@@ -1,5 +1,4 @@
-# JandCB.com 
-Jacob and Christianne Barnes
+# JandCB.com
 
 ## Various websites/blogs/etc 
 
@@ -7,26 +6,11 @@ Jacob and Christianne Barnes
 
   The landing page for all the child sites.
   
-* Christianne's Corner - christiannescorner.jandcb.com
-
-  My wife's blog.
-  
 * Jacob Barnes - jacobbarnes.jandcb.com
 
-  My blog.
+  My portfolio
   
 * Dad-a-base - dadabase.jandcb.com
 
   A parenting blog.
   
-
-## Technology Stack
-* Application/Data:
-  * Amazon S3 - Cloud Storage/Static Website Hosting
-* Utilities:
-  * Amazon Route 53 - DNS Management
-  * Amazon Cloud Front - CDN
-  * Jekyll - Static Site Generator
-* Business Tools:
-  * Trello - Project Management
-  * Slack - Chat/Notifications
