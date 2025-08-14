@@ -1,0 +1,306 @@
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Jacob Barnes &ndash; Portfolio</title>
+    <link rel="stylesheet" href="style.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap"
+        rel="stylesheet"/>
+    <script src="hero-matrix-animation.js" defer></script>
+    </head>
+    <body>
+        
+    <!-- Header -->
+    <header>
+        <nav class="navbar">
+        <div class="container nav-container">
+            <div class="nav-brand">Jacob&nbsp;Barnes</div>
+
+            <!-- Hamburger -->
+            <button class="nav-toggle" aria-label="Open menu" aria-expanded="false" aria-controls="primary-nav">
+            <!-- Hamburger icon -->
+            <svg class="icon-hamburger" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="22" height="22" fill="currentColor" aria-hidden="true">
+                <path d="M3 6h18M3 12h18M3 18h18" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/>
+            </svg>
+            <!-- X icon -->
+            <svg class="icon-close" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="22" height="22" fill="currentColor" aria-hidden="true">
+                <path d="M6 6l12 12M18 6l-12 12" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/>
+            </svg>
+            </button>
+
+            <ul id="primary-nav" class="nav-links" data-collapsible>
+            <li><a href="#home">Home</a></li>
+            <li><a href="#about">About</a></li>
+            <li><a href="#experience">Experience</a></li>
+            <li><a href="#skills">Skills</a></li>
+            <li><a href="#education">Education</a></li>
+            <li><a href="#contact">Contact</a></li>
+            </ul>
+        </div>
+        </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <section id="home" class="hero-section">
+        <div class="container">
+        <h1 class="hero-title">Jacob&nbsp;Barnes</h1>
+        <h2 class="hero-subtitle">Senior Software Engineer</h2>
+        <p class="hero-description">
+            Experienced software developer with a passion for designing,
+            developing, testing and deploying robust software solutions. I
+            enjoy building full stack applications that create meaningful
+            impact and align with business goals.
+        </p>
+        </div>
+        <a href="jacob-barnes-resume.pdf"
+           class="btn-resume"
+           target="_blank"
+           rel="noopener noreferrer"
+           download>
+            <svg class="svg-resume"
+                 xmlns="http://www.w3.org/2000/svg"
+                 viewBox="0 0 24 24"
+                 fill="currentColor"
+                 width="16"
+                 height="16">
+                    <path d="M16.5 6.5l-7.79 7.79a3 3 0 104.24 4.24l7.79-7.79a5 
+                            5 0 00-7.07-7.07l-7.79 7.79a7 7 0 109.9 9.9l7.79-7.79" />
+            </svg>
+            Download Resume (PDF)
+         </a>
+        <canvas id="hero-matrix" class="hero-matrix-canvas" aria-hidden="true"></canvas>       
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="about-section">
+        <div class="container">
+        <h2>About Me</h2>
+        <p>
+            With over a decade of experience in aerospace, telecommunications, and energy, I've built, tested, and deployed scalable software solutions that support mission critical systems.
+            <br/><br/>
+            As a Senior Software Engineer at Verizon, I helped design and maintain features that strengthened network security and fraud prevention, consistently exceeding customer expectations. At ULA, my contributions saved taxpayers millions of dollars each year by improving efficiency in failure reporting.
+            <br/><br/>
+            I thrive in collaborative, agile environments and take pride in mentoring junior developers and interns, supporting shared growth, and helping teammates overcome challenges. Known for my reliability, adaptability, and strong work ethic, I bring a thoughtful and conscientious approach to every project.
+            <br/><br/>
+            I've earned formal recognition and awards in every role I've held, reflecting my commitment to quality, ownership, and impact. My values of integrity, respect, and humility guide how I lead, contribute, and grow. I am always seeking new challenges that stretch my skills and allow me to build something that matters.
+        </p>
+        </div>
+    </section>
+
+    <!-- Experience Section -->
+    <section id="experience" class="experience-section">
+        <div class="container">
+        <h2>Professional Experience</h2>
+        <div class="experience-list">
+            <!-- WSU Tech -->
+            <article class="experience-item">
+            <div class="experience-header">
+                <h3>Adjunct Professor</h3>
+                <span class="company">WSU Tech &middot; Wichita, KS</span>
+                <span class="dates">Aug&nbsp;2024&nbsp;&ndash;&nbsp;Present</span>
+            </div>
+            <ul>
+                <li>Developing and teaching curriculum on machine learning, artificial intelligence and networking fundamentals.</li>
+                <li>Facilitating hands on learning experiences for students preparing for careers in technology.</li>
+            </ul>
+            </article>
+            <!-- Verizon -->
+            <article class="experience-item">
+            <div class="experience-header">
+                <h3>Senior Software Engineer - Full Stack</h3>
+                <span class="company">Verizon &middot; Remote</span>
+                <span class="dates">Nov&nbsp;2019&nbsp;&ndash;&nbsp;Apr&nbsp;2025</span>
+            </div>
+            <ul>
+                <li>Designed, implemented and maintained network data analysis features, APIs and data visualizations.</li>
+                <li>Dramatically improved customers' ability to enhance network security and reliability.</li>
+                <li>Took ownership of senior level responsibilities across the entire software development lifecycle.</li>
+                <li>Worked extensively with JavaScript, AngularJS, Java, JSP, Cytoscape.js, Plotly, Highcharts and other tools.</li>
+            </ul>
+            </article>
+            <!-- United Launch Alliance -->
+            <article class="experience-item">
+            <div class="experience-header">
+                <h3>Software Engineer - Full Stack</h3>
+                <span class="company">United Launch Alliance &middot; Hybrid</span>
+                <span class="dates">Apr&nbsp;2018&nbsp;&ndash;&nbsp;Nov&nbsp;2019</span>
+            </div>
+            <ul>
+                <li>Mentored interns and briefly served as a project manager leading a small development team.</li>
+                <li>Developed mission critical software using JavaScript, Angular&nbsp;7, Java/Spring Boot, Jenkins and Jira/Confluence.</li>
+                <li>Designed and implemented a failure review system for the United States Air Force, saving millions of dollars annually.</li>
+            </ul>
+            </article>
+            <!-- Restaurant Solutions -->
+            <article class="experience-item">
+            <div class="experience-header">
+                <h3>Software Engineer</h3>
+                <span class="company">Restaurant Solutions Inc.</span>
+                <span class="dates">Jul&nbsp;2017&nbsp;&ndash;&nbsp;Apr&nbsp;2018</span>
+            </div>
+            <ul>
+                <li>Designed and implemented a scalable cloud solution and messaging architecture for client data polling.</li>
+                <li>Owned the full development lifecycle: planning, coding, testing, deployment and maintenance.</li>
+                <li>Enabled the business to scale from supporting hundreds to thousands of restaurants.</li>
+                <li>Technologies included JavaScript, C#, VB.Net, AWS, RabbitMQ/Mass&nbsp;Transit, ASP.Net and T SQL.</li>
+            </ul>
+            </article>
+            <!-- Flint Hills Resources -->
+            <article class="experience-item">
+            <div class="experience-header">
+                <h3>Software Engineer</h3>
+                <span class="company">Flint Hills Resources</span>
+                <span class="dates">Apr&nbsp;2013&nbsp;&ndash;&nbsp;Jul&nbsp;2017</span>
+            </div>
+            <ul>
+                <li>Resolved bugs and developed new features for a diverse range of in house and third party enterprise applications.</li>
+                <li>Mentored interns and participated in college recruiting initiatives.</li>
+                <li>Utilized languages and tools such as JavaScript, C#, T SQL, PL/SQL, ASP.Net, Angular, XSLT, Bash/Shell, Git and VB.Net.</li>
+            </ul>
+            </article>
+        </div>
+        </div>
+    </section>
+
+    <!-- Skills Section -->
+    <section id="skills" class="skills-section">
+        <div class="container">
+        <h2>Skills</h2>
+        <div class="skills-grid">
+            <ul>
+            <li>JavaScript / TypeScript</li>
+            <li>AngularJS / Angular</li>
+            <li>Java / Spring Boot</li>
+            <li>C# / .NET (ASP.Net, VB.Net)</li>
+            <li>SQL &ndash; T-SQL, PL/SQL</li>
+            <li>HTML &amp; CSS</li>
+            </ul>
+            <ul>
+            <li>Data Visualization (Plotly, Highcharts, Cytoscape.js)</li>
+            <li>Cloud &amp; Messaging (AWS, RabbitMQ, Mass&nbsp;Transit)</li>
+            <li>Tools &amp; DevOps (Git, Jenkins, Jira, Confluence, CVS)</li>
+            <li>Operating Systems &amp; Scripting (Linux, Bash/Shell)</li>
+            <li>Agile Development &amp; SDLC</li>
+            </ul>
+        </div>
+        </div>
+    </section>
+
+    <!-- Education Section -->
+    <section id="education" class="education-section">
+        <div class="container">
+        <h2>Education</h2>
+        <article class="education-item">
+            <h3>Bachelor of Science in Information Technology</h3>
+            <span class="school">Newman University</span>
+        </article>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="contact-section">
+        <div class="container">
+        <h2>Contact</h2>
+        <p>
+            I'm always excited to discuss new opportunities and collaborations. Feel
+            free to reach out!
+        </p>
+        <ul class="contact-list">
+            <li>
+            <strong>Email:</strong>
+            <a href="mailto:jmbarnes1987@gmail.com">jmbarnes1987@gmail.com</a>
+            </li>
+            <li><strong>Phone:</strong> <a href="tel:+13167279528">(316) 727-9528</a></li>
+            <li>
+            <strong>LinkedIn:</strong>
+            <a href="https://www.linkedin.com/in/jacob-m-barnes/" target="_blank" rel="noopener">
+                Jacob Barnes
+            </a>
+            </li>
+        </ul>
+        </div>
+    </section>
+
+    <!-- Theme Section-->
+    <section id="theme" class="theme-section">
+        <div class="theme-container">
+            <label for="theme-select" class="theme-label">Theme:</label>
+            <select id="theme-select" class="theme-switcher">
+                <option value="stone">Stone</option>
+                <option value="red">Red</option>
+                <option value="blue">Blue</option>
+            </select>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container footer-container">
+        <p>&copy; <span id="year">2025</span> Jacob&nbsp;Barnes. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Keep footer year current
+        document.getElementById("year").textContent = new Date().getFullYear();
+
+        // Theme switching
+        const themeSelect = document.getElementById('theme-select');
+        function applyTheme(name) {
+            const root = document.documentElement;
+            root.classList.remove('theme-stone', 'theme-red', 'theme-blue');
+            switch (name) {
+            case 'red':
+                root.classList.add('theme-red');
+                break;
+            case 'blue':
+                root.classList.add('theme-blue');
+                break;
+            case 'stone':
+            default:
+                root.classList.add('theme-stone');
+                break;
+            }
+        }
+        // Set initial theme based on default value
+        applyTheme(themeSelect.value);
+        themeSelect.addEventListener('change', (e) => {
+            applyTheme(e.target.value);
+        });        
+    </script>
+
+    <script>
+        (function () {
+            const btn  = document.querySelector('.nav-toggle');
+            const menu = document.getElementById('primary-nav');
+
+            if (!btn || !menu) return;
+
+            btn.addEventListener('click', () => {
+            const open = menu.classList.toggle('open');
+            btn.setAttribute('aria-expanded', String(open));
+            });
+
+            // Close menu when a link is clicked (nice on mobile)
+            menu.addEventListener('click', (e) => {
+            if (e.target.matches('a')) {
+                menu.classList.remove('open');
+                btn.setAttribute('aria-expanded', 'false');
+            }
+            });
+
+            // On resize back to desktop, ensure menu is reset
+            window.addEventListener('resize', () => {
+            if (window.innerWidth > 768) {
+                menu.classList.remove('open');
+                btn.setAttribute('aria-expanded', 'false');
+            }
+            });
+        })();
+    </script>    
+</body>
+</html>
