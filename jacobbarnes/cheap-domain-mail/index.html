@@ -1,1 +1,285 @@
-IN DEV
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Cheap Domain Mail - Guide</title>
+<link rel="stylesheet" href="../style.css" />
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+<header>
+<nav class="navbar">
+    <div class="container nav-container">
+    <ul class="nav-links">
+        <li><a href="../index.html">Home</a></li>
+        <li><a href="#top">Cheap Domain Mail</a></li>
+    </ul>
+    </div>
+</nav>
+</header>
+
+<div id="top" class="page container">
+<h1>Cheap Domain Mail</h1>
+<p>
+    Configure custom domain email inexpensively using <strong>AWS SES</strong> for outbound mail,
+    <strong>ImprovMX</strong> for inbound forwarding, and <strong>Gmail</strong> as your client.
+    Complete AWS first (outbound), then ImprovMX (inbound), and finally Gmail.
+</p>
+
+<nav id="toc" class="toc">
+    <h2>Contents</h2>
+    <ol>
+    <li><a href="#aws-ses">AWS SES – Outbound Email</a></li>
+    <li><a href="#improvmx">ImprovMX – Inbound Forwarding</a></li>
+    <li><a href="#gmail">Gmail – Send Mail As</a></li>
+    <li><a href="#testing">Testing</a></li>
+    <li><a href="#pitfalls">Common Pitfalls & Fixes</a></li>
+    <li><a href="#appendix">Appendix – Sample DNS Records</a></li>
+    </ol>
+</nav>
+
+<section id="aws-ses" class="guide-section">
+    <h2>1) AWS SES – Outbound Email</h2>
+    <p>
+    AWS Simple Email Service (SES) handles outgoing messages for your domain. Verify your domain,
+    add DNS records, request production access, and create SMTP credentials.
+    </p>
+
+    <h3>1.1 Verify Your Domain</h3>
+    <ol>
+    <li>Open the <a href="https://console.aws.amazon.com/ses/" target="_blank" rel="noopener">SES Console</a>.</li>
+    <li>Go to <em>Verified identities</em> → <em>Create identity</em>.</li>
+    <li>Select <strong>Domain</strong>, enter your domain (e.g., <code>yourdomain.com</code>), leave DKIM enabled.</li>
+    <li>Save the verification and DKIM records shown by SES.</li>
+    </ol>
+    <img src="screenshots/aws-ses-domain-verification.png" alt="SES domain verification screen" class="screenshot"/>
+    <p class="screenshot-caption">Screenshot: SES domain verification workflow.</p>
+
+    <h3>1.2 Add DNS Records (TXT + DKIM CNAME)</h3>
+    <p>At your DNS provider, create the records exactly as SES displays. A typical set looks like:</p>
+    <pre class="code-block"><code>; SES Domain verification
+Type: TXT
+Name: _amazonses.yourdomain.com
+Value: "random-string-from-SES"
+
+; DKIM (3 CNAMEs)
+Type: CNAME
+Name: abcdefghijklmnopqrstu._domainkey.yourdomain.com
+Value: abcdefghijklmnopqrstu.dkim.amazonses.com
+
+Type: CNAME
+Name: vwxyz0123456789abcd._domainkey.yourdomain.com
+Value: vwxyz0123456789abcd.dkim.amazonses.com
+
+Type: CNAME
+Name: 123456abcdef7890ghi._domainkey.yourdomain.com
+Value: 123456abcdef7890ghi.dkim.amazonses.com</code>
+    </pre>
+    <p>DNS propagation can take time. Wait until SES shows the identity as <strong>Verified</strong>.</p>
+
+    <h3>1.3 (Optional but Recommended) Set a Custom MAIL FROM Domain</h3>
+    <p>
+    In SES → your domain → <em>MAIL FROM</em>, set something like <code>mail.yourdomain.com</code>.
+    SES will provide additional <code>MX</code> and <code>TXT</code> (SPF) records.
+    </p>
+    <pre class="code-block"><code>; MAIL FROM (example)
+Type: MX
+Name: mail.yourdomain.com
+Priority: 10
+Value: feedback-smtp.us-east-1.amazonses.com
+
+Type: TXT
+Name: mail.yourdomain.com
+Value: "v=spf1 include:amazonses.com -all"
+</code></pre>
+    <p>This helps SPF alignment and improves deliverability.</p>
+
+    <h3>1.4 Request Production Access (Move Out of Sandbox)</h3>
+    <ol>
+    <li>Go to <a href="https://console.aws.amazon.com/support/home#/case/create" target="_blank" rel="noopener">AWS Support → Create case</a>.</li>
+    <li>Choose <strong>Service limit increase</strong> → <strong>SES Sending Limits</strong>.</li>
+    <li>Explain your use case (transactional or personal business email), target region, expected volume.</li>
+    </ol>
+
+    <h3>1.5 Create IAM User & SMTP Credentials</h3>
+    <ol>
+    <li>Open <em>AWS IAM</em> → <em>Users</em> → <em>Add users</em> → Name: <code>ses-smtp-user</code>.</li>
+    <li>Access type: <strong>Programmatic access</strong>.</li>
+    <li>Attach policy (minimal example):</li>
+    </ol>
+    <pre class="code-block"><code>{
+"Version": "2012-10-17",
+"Statement": [
+{
+    "Effect": "Allow",
+    "Action": [
+    "ses:SendEmail",
+    "ses:SendRawEmail"
+    ],
+    "Resource": "*"
+}
+]
+}
+</code></pre>
+    <ol start="4">
+    <li>Save the <strong>Access key ID</strong> and <strong>Secret access key</strong>.</li>
+    <li>Convert them to SMTP credentials (SES docs provide a converter; many SDKs do as well).</li>
+    </ol>
+    <p>SMTP settings (example for <code>us-east-1</code>):</p>
+    <pre class="code-block"><code>SMTP Host: email-smtp.us-east-1.amazonaws.com
+Port: 465 (SSL) or 587 (TLS)
+Username: &lt;SES SMTP username&gt;
+Password: &lt;SES SMTP password&gt;
+</code></pre>
+</section>
+
+<section id="improvmx" class="guide-section">
+    <h2>2) ImprovMX – Inbound Forwarding</h2>
+    <p>
+    ImprovMX forwards inbound mail to your Gmail address. You’ll add your domain and set MX records.
+    </p>
+
+    <h3>2.1 Add Your Domain & Default Forward</h3>
+    <ol>
+    <li>Go to <a href="https://improvmx.com" target="_blank" rel="noopener">ImprovMX</a> and sign in.</li>
+    <li><em>Add domain</em> → enter <code>yourdomain.com</code>.</li>
+    <li>Set default forward: <code>you@yourdomain.com → yourgmail@gmail.com</code>.</li>
+    </ol>
+    <img src="screenshots/improvmx-dashboard.png" alt="ImprovMX dashboard domain added" class="screenshot"/>
+    <p class="screenshot-caption">Screenshot: Domain added in ImprovMX with default forward.</p>
+
+    <h3>2.2 Update DNS MX Records</h3>
+    <pre class="code-block"><code>; ImprovMX MX
+Type: MX
+Name: @
+Priority: 10
+Value: mx1.improvmx.com
+
+Type: MX
+Name: @
+Priority: 20
+Value: mx2.improvmx.com
+</code></pre>
+    <p>
+    Ensure there are no conflicting MX records for the root domain left over from other providers.
+    You can optionally add aliases (e.g., <code>support@</code>, <code>info@</code>) to forward to different Gmail addresses.
+    </p>
+</section>
+
+<section id="gmail" class="guide-section">
+    <h2>3) Gmail – Send Mail As (Using SES)</h2>
+    <p>Add your custom address in Gmail and point SMTP at AWS SES.</p>
+
+    <h3>3.1 Add the Address</h3>
+    <ol>
+    <li>Open Gmail → <em>Settings</em> → <em>See all settings</em> → <em>Accounts and Import</em>.</li>
+    <li>Under <em>Send mail as</em>, click <strong>Add another email address</strong>.</li>
+    <li>Name: your display name, Email: <code>you@yourdomain.com</code>.</li>
+    <li>Check <em>Treat as an alias</em> (usually yes).</li>
+    </ol>
+    <img src="screenshots/gmail-send-as.png" alt="Gmail 'Send mail as' setup" class="screenshot"/>
+    <p class="screenshot-caption">Screenshot: Adding your custom address in Gmail.</p>
+
+    <h3>3.2 SMTP (AWS SES)</h3>
+    <pre class="code-block"><code>SMTP Server: email-smtp.us-east-1.amazonaws.com
+Port: 465 (SSL) or 587 (TLS)
+Username: &lt;SES SMTP username&gt;
+Password: &lt;SES SMTP password&gt;
+Secured connection: SSL/TLS (465) or STARTTLS (587)
+</code></pre>
+    <p>
+    Gmail will send a verification email to <code>you@yourdomain.com</code> which ImprovMX forwards to your Gmail inbox.
+    Click the link or paste the code to confirm.
+    </p>
+
+    <h3>3.3 Optional Settings</h3>
+    <ul>
+    <li><strong>Reply-to</strong>: set a different reply-to if desired.</li>
+    <li><strong>Default send</strong>: set your custom address as default for new mails.</li>
+    <li><strong>Signature</strong>: create a signature tied to this address.</li>
+    </ul>
+
+    <img src="screenshots/gmail-success.png" alt="Gmail sending as custom domain" class="screenshot"/>
+    <p class="screenshot-caption">Screenshot: Gmail successfully sending from your custom domain.</p>
+</section>
+
+<section id="testing" class="guide-section">
+    <h2>4) Testing</h2>
+    <ol>
+    <li><strong>Outbound:</strong> From Gmail, compose a message using <code>you@yourdomain.com</code> and send to a non-Gmail address you control.</li>
+    <li>Inspect headers of the received mail: verify <code>DKIM=pass</code>, <code>SPF=pass</code>, <code>DMARC=pass</code> if configured.</li>
+    <li><strong>Inbound:</strong> From a different account, send a message to <code>you@yourdomain.com</code>; verify it arrives via ImprovMX forwarding.</li>
+    </ol>
+</section>
+
+<section id="pitfalls" class="guide-section">
+    <h2>5) Common Pitfalls & Fixes</h2>
+    <ul>
+    <li><strong>Still in SES Sandbox:</strong> You can only send to verified emails. Request production access in AWS Support.</li>
+    <li><strong>Wrong Region:</strong> SMTP host must match the region where your identity is verified (e.g., <code>email-smtp.us-east-1.amazonaws.com</code>).</li>
+    <li><strong>DNS Not Propagated:</strong> TXT/CNAME/MX records can take time. Use your DNS provider’s lookup tools to confirm live values.</li>
+    <li><strong>Mixed MX Records:</strong> Make sure only ImprovMX MX records exist for your root domain if ImprovMX handles inbound.</li>
+    <li><strong>SPF Failures:</strong> If you use a custom MAIL FROM, ensure the <code>TXT</code> at that subdomain includes <code>include:amazonses.com</code>.</li>
+    <li><strong>DMARC Alignment:</strong> Consider adding a DMARC record:
+        <pre class="code-block"><code>Type: TXT
+Name: _dmarc.yourdomain.com
+Value: "v=DMARC1; p=quarantine; rua=mailto:dmarc@yourdomain.com; ruf=mailto:dmarc@yourdomain.com; fo=1"
+</code></pre>
+        Adjust <code>p=</code> (policy) as you gain confidence.
+    </li>
+    <li><strong>Gmail Verification Email Not Arriving:</strong> Confirm ImprovMX default forward is correct and MX records are active.</li>
+    <li><strong>SES Sending Rejected:</strong> Check identity verification status, sending limits, bounce/complaint rates, and IAM permissions.</li>
+    </ul>
+</section>
+
+<section id="appendix" class="guide-section">
+    <h2>Appendix – Sample DNS Zone Snippets</h2>
+    <h3>A. Minimal SPF/DMARC with SES only</h3>
+    <pre class="code-block"><code>; SPF at root (if NOT using custom MAIL FROM)
+Type: TXT
+Name: yourdomain.com
+Value: "v=spf1 include:amazonses.com -all"
+
+; DMARC (monitoring mode)
+Type: TXT
+Name: _dmarc.yourdomain.com
+Value: "v=DMARC1; p=none; rua=mailto:dmarc@yourdomain.com; ruf=mailto:dmarc@yourdomain.com; fo=1"
+</code></pre>
+
+    <h3>B. With Custom MAIL FROM</h3>
+    <pre class="code-block"><code>; MAIL FROM domain records (from SES)
+Type: MX
+Name: mail.yourdomain.com
+Priority: 10
+Value: feedback-smtp.us-east-1.amazonses.com
+
+Type: TXT
+Name: mail.yourdomain.com
+Value: "v=spf1 include:amazonses.com -all"
+</code></pre>
+
+    <h3>C. ImprovMX MX</h3>
+    <pre class="code-block"><code>Type: MX
+Name: @
+Priority: 10
+Value: mx1.improvmx.com
+
+Type: MX
+Name: @
+Priority: 20
+Value: mx2.improvmx.com
+</code></pre>
+</section>
+</div>
+
+<footer>
+<div class="container footer-container">
+    <p>&copy; <span id="year"></span> Jacob&nbsp;Barnes. All rights reserved.</p>
+</div>
+</footer>
+<script>
+document.getElementById("year").textContent = new Date().getFullYear();
+</script>
+</body>
+</html>
