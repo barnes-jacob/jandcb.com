@@ -20,13 +20,10 @@
         <div class="container nav-container">
             <div class="nav-brand">Jacob&nbsp;Barnes</div>
 
-            <!-- Hamburger -->
             <button class="nav-toggle" aria-label="Open menu" aria-expanded="false" aria-controls="primary-nav">
-            <!-- Hamburger icon -->
             <svg class="icon-hamburger" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="22" height="22" fill="currentColor" aria-hidden="true">
                 <path d="M3 6h18M3 12h18M3 18h18" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/>
             </svg>
-            <!-- X icon -->
             <svg class="icon-close" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="22" height="22" fill="currentColor" aria-hidden="true">
                 <path d="M6 6l12 12M18 6l-12 12" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/>
             </svg>
@@ -35,6 +32,36 @@
             <ul id="primary-nav" class="nav-links" data-collapsible>
             <li><a href="#home">Home</a></li>
             <li><a href="#about">About</a></li>
+            <li class="has-submenu">
+                <button
+                class="submenu-toggle"
+                data-submenu-toggle
+                aria-haspopup="true"
+                aria-expanded="false"
+                aria-controls="projects-submenu">
+                Projects
+                <svg class="caret" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M7 10l5 5 5-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+                </button>
+                <ul id="projects-submenu" class="submenu" role="menu">
+                <li role="none">
+                    <a role="menuitem" href="https://jacobbarnes.jandcb.com/cheapdomainmail" target="_blank" rel="noopener">
+                        Cheap Domain Mail
+                    </a>
+                </li>
+                <li role="none">
+                    <a role="menuitem" href="https://github.com/barnes-jacob/matrix-background-effect" target="_blank" rel="noopener">
+                        Matrix Background Effect
+                    </a>
+                </li>
+                <li role="none">
+                    <a role="menuitem" href="https://srg.gatebreaker.games" target="_blank" rel="noopener">
+                        Steam Review Generator (In Development)
+                    </a>
+                </li>
+                </ul>
+            </li>            
             <li><a href="#experience">Experience</a></li>
             <li><a href="#skills">Skills</a></li>
             <li><a href="#education">Education</a></li>
@@ -91,6 +118,7 @@
         </div>
     </section>
 
+    <!--TODO: maybe add the actual company icons? Copyright problem? Maybe just brand colors?-->
     <!-- Experience Section -->
     <section id="experience" class="experience-section">
         <div class="container">
@@ -254,18 +282,19 @@
             const root = document.documentElement;
             root.classList.remove('theme-stone', 'theme-red', 'theme-blue');
             switch (name) {
-            case 'red':
-                root.classList.add('theme-red');
-                break;
-            case 'blue':
-                root.classList.add('theme-blue');
-                break;
-            case 'stone':
-            default:
-                root.classList.add('theme-stone');
-                break;
+                case 'red':
+                    root.classList.add('theme-red');
+                    break;
+                case 'blue':
+                    root.classList.add('theme-blue');
+                    break;
+                case 'stone':
+                default:
+                    root.classList.add('theme-stone');
+                    break;
             }
         }
+
         // Set initial theme based on default value
         applyTheme(themeSelect.value);
         themeSelect.addEventListener('change', (e) => {
@@ -273,34 +302,95 @@
         });        
     </script>
 
+    <!-- Nav Menu Logic -->
     <script>
-        (function () {
-            const btn  = document.querySelector('.nav-toggle');
-            const menu = document.getElementById('primary-nav');
+    (function () {
+        const navbar = document.querySelector('.navbar');
+        const navBtn = document.querySelector('.nav-toggle');
+        const navMenu = document.getElementById('primary-nav');
+        const submenuBtns = Array.from(document.querySelectorAll('[data-submenu-toggle]'));
 
-            if (!btn || !menu) return;
+        const isMobileOrMin = () => window.innerWidth <= 768;
 
-            btn.addEventListener('click', () => {
-            const open = menu.classList.toggle('open');
-            btn.setAttribute('aria-expanded', String(open));
+        const openMenu = () => { 
+                                if (!navBtn || !navMenu) return; 
+                                navMenu.classList.add('open');  
+                                navBtn.setAttribute('aria-expanded','true');  
+                            };
+        const closeMenu = () => { 
+                                    if (!navBtn || !navMenu) return; 
+                                    navMenu.classList.remove('open'); 
+                                    navBtn.setAttribute('aria-expanded','false'); 
+                                };
+
+        function parts(btn) {
+            const li = btn.closest('.has-submenu');
+            const id = btn.getAttribute('aria-controls');
+            const submenu = id ? document.getElementById(id) : li?.querySelector('.submenu');
+            return { li, submenu };
+        }
+        function openSub(btn) { 
+                                const { li } = parts(btn); 
+                                if (!li) return; li.classList.add('open');  
+                                btn.setAttribute('aria-expanded','true'); 
+                            }
+        function closeSub(btn) { 
+                                    const { li } = parts(btn); 
+                                    if (!li) return; li.classList.remove('open'); 
+                                    btn.setAttribute('aria-expanded','false'); 
+                                }
+        function closeAllSubs() { submenuBtns.forEach(closeSub); }
+
+        if (navBtn && navMenu) {
+            navBtn.addEventListener('click', (e) => {
+                e.stopPropagation(); 
+                const opening = !navMenu.classList.contains('open');
+                if (opening) openMenu(); else closeMenu();
+                if (!opening) closeAllSubs(); 
             });
 
-            // Close menu when a link is clicked (nice on mobile)
-            menu.addEventListener('click', (e) => {
-            if (e.target.matches('a')) {
-                menu.classList.remove('open');
-                btn.setAttribute('aria-expanded', 'false');
+            navMenu.addEventListener('click', (e) => {
+                const a = e.target.closest('a');
+                if (a) {
+                    closeMenu();
+                    closeAllSubs();
+                }
+            });
+        }
+
+        submenuBtns.forEach((btn) => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation(); 
+                const { li } = parts(btn);
+                if (!li) return;
+                const willOpen = !li.classList.contains('open');
+                closeAllSubs();
+                if (willOpen) openSub(btn);
+            });
+        });
+
+        document.addEventListener('click', (e) => {
+            if (navbar && navbar.contains(e.target)) return; 
+            closeAllSubs();
+            if (isMobileOrMin()) closeMenu();
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+            closeAllSubs();
+            if (isMobileOrMin()) closeMenu();
+                submenuBtns[0]?.focus();
             }
-            });
+        });
 
-            // On resize back to desktop, ensure menu is reset
-            window.addEventListener('resize', () => {
-            if (window.innerWidth > 768) {
-                menu.classList.remove('open');
-                btn.setAttribute('aria-expanded', 'false');
-            }
-            });
-        })();
-    </script>    
+        window.addEventListener('resize', () => {
+            closeAllSubs();
+            closeMenu();
+        });
+
+        if (navBtn) navBtn.setAttribute('aria-expanded','false');
+        submenuBtns.forEach((b) => b.setAttribute('aria-expanded','false'));
+    })();
+    </script>
 </body>
 </html>
