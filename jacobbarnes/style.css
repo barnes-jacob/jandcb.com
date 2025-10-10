@@ -112,6 +112,15 @@ z-index: -1;
     font-size: 1.4rem;
     font-weight: 700;
     color: var(--text-main);
+    display: flex;
+}
+
+.nav-brand img {
+    height: 40px;
+    width: 40px;
+    border-radius: 50%;
+    margin-right: 0.75rem;
+    border: 2px solid var(--accent-color);
 }
 
 .nav-links {
