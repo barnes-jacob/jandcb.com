@@ -11,6 +11,8 @@
         href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap"
         rel="stylesheet"/>
     <script src="hero-matrix-animation.js" defer></script>
+    <script src="nav-menu.js" defer></script>
+    <script src="footer.js" defer></script>
     </head>
     <body>
         
@@ -168,7 +170,7 @@
             <ul>
                 <li>Mentored interns and briefly served as a project manager leading a small development team.</li>
                 <li>Developed mission critical software using JavaScript, Angular&nbsp;7, Java/Spring Boot, Jenkins and Jira/Confluence.</li>
-                <li>Designed and implemented a failure review system for the United States Air Force, saving millions of dollars annually.</li>
+                <li>Designed and implemented a failure review system for the United States Air Force, saving millions of tax dollars annually.</li>
             </ul>
             </article>
             <!-- Restaurant Solutions -->
@@ -279,126 +281,5 @@
         <p>&copy; <span id="year">2025</span> Jacob&nbsp;Barnes. All rights reserved.</p>
         </div>
     </footer>
-
-    <script>
-        // Keep footer year current
-        document.getElementById("year").textContent = new Date().getFullYear();
-
-        // Theme switching
-        const themeSelect = document.getElementById('theme-select');
-        function applyTheme(name) {
-            const root = document.documentElement;
-            root.classList.remove('theme-stone', 'theme-red', 'theme-blue');
-            switch (name) {
-                case 'red':
-                    root.classList.add('theme-red');
-                    break;
-                case 'blue':
-                    root.classList.add('theme-blue');
-                    break;
-                case 'stone':
-                default:
-                    root.classList.add('theme-stone');
-                    break;
-            }
-        }
-
-        // Set initial theme based on default value
-        applyTheme(themeSelect.value);
-        themeSelect.addEventListener('change', (e) => {
-            applyTheme(e.target.value);
-        });        
-    </script>
-
-    <!-- Nav Menu Logic -->
-    <script>
-    (function () {
-        const navbar = document.querySelector('.navbar');
-        const navBtn = document.querySelector('.nav-toggle');
-        const navMenu = document.getElementById('primary-nav');
-        const submenuBtns = Array.from(document.querySelectorAll('[data-submenu-toggle]'));
-
-        const isMobileOrMin = () => window.innerWidth <= 768;
-
-        const openMenu = () => { 
-                                if (!navBtn || !navMenu) return; 
-                                navMenu.classList.add('open');  
-                                navBtn.setAttribute('aria-expanded','true');  
-                            };
-        const closeMenu = () => { 
-                                    if (!navBtn || !navMenu) return; 
-                                    navMenu.classList.remove('open'); 
-                                    navBtn.setAttribute('aria-expanded','false'); 
-                                };
-
-        function parts(btn) {
-            const li = btn.closest('.has-submenu');
-            const id = btn.getAttribute('aria-controls');
-            const submenu = id ? document.getElementById(id) : li?.querySelector('.submenu');
-            return { li, submenu };
-        }
-        function openSub(btn) { 
-                                const { li } = parts(btn); 
-                                if (!li) return; li.classList.add('open');  
-                                btn.setAttribute('aria-expanded','true'); 
-                            }
-        function closeSub(btn) { 
-                                    const { li } = parts(btn); 
-                                    if (!li) return; li.classList.remove('open'); 
-                                    btn.setAttribute('aria-expanded','false'); 
-                                }
-        function closeAllSubs() { submenuBtns.forEach(closeSub); }
-
-        if (navBtn && navMenu) {
-            navBtn.addEventListener('click', (e) => {
-                e.stopPropagation(); 
-                const opening = !navMenu.classList.contains('open');
-                if (opening) openMenu(); else closeMenu();
-                if (!opening) closeAllSubs(); 
-            });
-
-            navMenu.addEventListener('click', (e) => {
-                const a = e.target.closest('a');
-                if (a) {
-                    closeMenu();
-                    closeAllSubs();
-                }
-            });
-        }
-
-        submenuBtns.forEach((btn) => {
-            btn.addEventListener('click', (e) => {
-                e.stopPropagation(); 
-                const { li } = parts(btn);
-                if (!li) return;
-                const willOpen = !li.classList.contains('open');
-                closeAllSubs();
-                if (willOpen) openSub(btn);
-            });
-        });
-
-        document.addEventListener('click', (e) => {
-            if (navbar && navbar.contains(e.target)) return; 
-            closeAllSubs();
-            if (isMobileOrMin()) closeMenu();
-        });
-
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') {
-            closeAllSubs();
-            if (isMobileOrMin()) closeMenu();
-                submenuBtns[0]?.focus();
-            }
-        });
-
-        window.addEventListener('resize', () => {
-            closeAllSubs();
-            closeMenu();
-        });
-
-        if (navBtn) navBtn.setAttribute('aria-expanded','false');
-        submenuBtns.forEach((b) => b.setAttribute('aria-expanded','false'));
-    })();
-    </script>
 </body>
 </html>
